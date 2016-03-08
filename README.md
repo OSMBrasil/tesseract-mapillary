@@ -46,7 +46,7 @@ Os comandos assumem um sistema Ubuntu, mas os softwares são multiplataforma.
     mkdir coord
     for i in *jpg ; do echo "Convertendo coordenadas $i" ; convert $i -crop [loc] coord/$i ; done
 
-    Video 1 loc=183x87+861+21
+    Video 1 loc=183x97+861+15
     Video 2 loc=115x65+980+825
 
 ### Ajustando o contraste
@@ -60,3 +60,12 @@ Os comandos assumem um sistema Ubuntu, mas os softwares são multiplataforma.
 
     mkdir data
     for i in *jpg ; do echo "Convertendo datas $i" ; convert $i -crop 196x87+1056+21 data/$i ; done
+
+### OCR
+
+#### Video 1
+
+    tesseract [img] [out] -l dsdigital --tessdata-dir ./tessdata/ -psm 6 --user-patterns ./tessdata/latlng.user-patterns -c tessedit_char_whitelist=-,0123456789
+
+#### Video 2
+     tesseract  [img] [out] -l helvetica --tessdata-dir ./tessdata/ -psm 6 --user-patterns ./tessdata/latlng.user-patterns -c tessedit_char_whitelist=-,0123456789 -c language_model_penalty_punc=0.1
