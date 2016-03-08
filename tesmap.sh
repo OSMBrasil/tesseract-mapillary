@@ -121,6 +121,12 @@ function tesseract_latlng_video1() {
         -c tessedit_char_whitelist=-,0123456789
 }
 
+function tesseract_datetime_video1() {
+    tesseract $1 $2 -l dsdigital --tessdata-dir ./tessdata -psm 6 \
+        --user-patterns ./tessdata/datetime.user-patterns \
+        -c tessedit_char_whitelist=":/0123456789"
+}
+
 function tesseract_latlng_video2() {
     tesseract $1 $2 -l helvetica --tessdata-dir ./tessdata/ -psm 6 \
         --user-patterns ./tessdata/latlng.user-patterns \
@@ -173,7 +179,8 @@ case "$1" in
         download_video
         ;;
     test)
-        tesseract_latlng_video1 1/coord/001.jpg out
+        #tesseract_latlng_video1 1/coord/001.jpg out
+        tesseract_datetime_video1 1/time/001.jpg out
         ;;
     help)
         echo "not implemented"
