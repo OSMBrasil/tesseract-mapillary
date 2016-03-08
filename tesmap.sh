@@ -68,8 +68,6 @@ dependencies_check
 # apt-get install imagemagick
 # apt-get install libav-tools
 
-mkdir $DIR
-
 # TODO helper functions
 
 function extract_frames() {  # TODO
@@ -79,8 +77,8 @@ function extract_frames() {  # TODO
 
 
 function reduce1() {  # cutting data layer and car hood
+    mkdir -p $DIR/crop
     cd $DIR
-    mkdir crop
     for i in *jpg ; do
         echo "Converting $i"
         convert $i -crop $DIM crop/$i
@@ -89,8 +87,8 @@ function reduce1() {  # cutting data layer and car hood
 }
 
 function reduce2() {  # cutting the coordinates area
+    mkdir -p $DIR/coord
     cd $DIR
-    mkdir coord
     for i in *jpg ; do
         echo "Converting coordinates $i"
         convert $i -crop $1 coord/$i
@@ -99,8 +97,8 @@ function reduce2() {  # cutting the coordinates area
 }
 
 function reduce3() {  # cutting the dates
+    mkdir -p $DIR/time
     cd $DIR
-    mkdir time
     for i in *jpg ; do
         echo "Converting dates $i"
         convert $i -crop $DIM_DATES time/$i
