@@ -23,11 +23,14 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+YOUTUBE_VIDEO_ID=Qkg32qsbmC8
+
 # Variables
 
-URL="https://www.youtube.com/watch?v=Qkg32qsbmC8"
+URL="https://www.youtube.com/watch?v=$YOUTUBE_VIDEO_ID"
 DIR="1"
 FILE="São Paulo a Maceió - Inicio da Viagem Parte 1-Qkg32qsbmC8.mp4"
+#FILE=$(youtube-dl --get-filename $URL)
 
 DIM="864x486+208+117"
 DIM_COORD_VIDEO1="183x97+861+15"
@@ -107,14 +110,6 @@ function reduce3() {  # cutting the dates
     cd ..
 }
 
-function crop_frames() {  # TODO
-    # call reduce1
-    # call reduce2 DIM
-    # call reduce3
-    # TODO rename the tree functions above?
-    echo
-}
-
 function tesseract_latlng_video1() {
     tesseract $1 $2 -l dsdigital --tessdata-dir ./tessdata -psm 6 \
         --user-patterns ./tessdata/latlng.user-patterns \
@@ -130,8 +125,8 @@ function tesseract_latlng_video2() {
 
 # TODO main
 
-function download_video() {  # TODO
-    echo
+function download_video() {
+    youtube-dl $URL
 }
 
 function adjust_constrast() {  # TODO (optional use)
@@ -141,6 +136,12 @@ function adjust_constrast() {  # TODO (optional use)
     echo
 }
 
+function crop_frames() {
+    reduce1
+    reduce2 $DIM_COORD_VIDEO1  # TODO select
+    reduce3
+}
+
 function extract_data() {  # TODO
     echo
 }
@@ -148,8 +149,21 @@ function extract_data() {  # TODO
 # Parsing parameters
 
 case "$1" in
-    info|download|adjust|make|all)
+    info)
+        [ -e "$FILE" ] &&
+            echo "'$FILE'" is present ||
+            echo "'$FILE'" is NOT present
+        # TODO issue #3
+        ;;
+    adjust)
         echo "not implemented"
+        ;;
+    make)
+        crop_frames
+        extract_data
+        ;;
+    download)
+        download_video
         ;;
     test)
         tesseract_latlng_video1 1/coord/001.jpg out
