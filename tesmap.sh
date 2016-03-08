@@ -25,10 +25,12 @@
 
 YOUTUBE_VIDEO_ID=Qkg32qsbmC8
 
+TYPE=1
+
 # Variables
 
 URL="https://www.youtube.com/watch?v=$YOUTUBE_VIDEO_ID"
-DIR="1"
+DIR="$TYPE"
 FILE="São Paulo a Maceió - Inicio da Viagem Parte 1-Qkg32qsbmC8.mp4"
 #FILE=$(youtube-dl --get-filename $URL)
 
@@ -36,6 +38,9 @@ DIM="864x486+208+117"
 DIM_COORD_VIDEO1="183x97+861+15"
 DIM_COORD_VIDEO2="115x65+980+825"
 DIM_DATES="196x87+1056+21"
+
+DIM_COORD_VIDEO=DIM_COORD_VIDEO$TYPE
+DIM_COORD_VIDEO=${!DIM_COORD_VIDEO}
 
 # Check dependencies
 
@@ -138,7 +143,7 @@ function adjust_constrast() {  # TODO (optional use)
 
 function crop_frames() {
     reduce1
-    reduce2 $DIM_COORD_VIDEO1  # TODO select
+    reduce2 $DIM_COORD_VIDEO
     reduce3
 }
 
@@ -158,8 +163,10 @@ case "$1" in
     adjust)
         echo "not implemented"
         ;;
-    make)
+    prepare)
         crop_frames
+        ;;
+    make)
         extract_data
         ;;
     download)
@@ -178,6 +185,7 @@ case "$1" in
         echo "  info"
         echo "  download"
         echo "  adjust    (optional)"
+        echo "  prepare"
         echo "  make"
         echo "  all"
         echo "  help"
