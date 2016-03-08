@@ -50,6 +50,7 @@ function dependencies_check()
     passing "youtube-dl"
     passing "ffmpeg"
     passing "convert"
+    passing "tesseract"
 }
 
 dependencies_check
@@ -114,6 +115,19 @@ function crop_frames() {  # TODO
     echo
 }
 
+function tesseract_latlng_video1() {
+    tesseract $1 $2 -l dsdigital --tessdata-dir ./tessdata -psm 6 \
+        --user-patterns ./tessdata/latlng.user-patterns \
+        -c tessedit_char_whitelist=-,0123456789
+}
+
+function tesseract_latlng_video2() {
+    tesseract $1 $2 -l helvetica --tessdata-dir ./tessdata/ -psm 6 \
+        --user-patterns ./tessdata/latlng.user-patterns \
+        -c tessedit_char_whitelist=-,0123456789 \
+        -c language_model_penalty_punc=0.1
+}
+
 # TODO main
 
 function download_video() {  # TODO
@@ -138,7 +152,7 @@ case "$1" in
         echo "not implemented"
         ;;
     test)
-        reduce3
+        tesseract_latlng_video1 1/coord/001.jpg out
         ;;
     help)
         echo "not implemented"
