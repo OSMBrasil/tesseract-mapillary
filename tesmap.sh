@@ -25,13 +25,12 @@
 
 YOUTUBE_VIDEO_ID=Qkg32qsbmC8
 
-TYPE=1
-
 # Variables
 
 URL="https://www.youtube.com/watch?v=$YOUTUBE_VIDEO_ID"
+FILE=$3
+TYPE=$2
 DIR="$TYPE"
-FILE="São Paulo a Maceió - Inicio da Viagem Parte 1-Qkg32qsbmC8.mp4"
 #FILE=$(youtube-dl --get-filename $URL)
 
 DIM="864x486+208+117"
@@ -39,8 +38,15 @@ DIM_COORD_VIDEO1="183x97+861+15"
 DIM_COORD_VIDEO2="115x65+980+825"
 DIM_DATES="196x87+1056+21"
 
+LANG1=dsdigital
+LANG2=helvetica
+
 DIM_COORD_VIDEO=DIM_COORD_VIDEO$TYPE
 DIM_COORD_VIDEO=${!DIM_COORD_VIDEO}
+
+LANG=LANG$TYPE
+LANG=${!LANG}
+
 
 # Check dependencies
 
@@ -115,19 +121,6 @@ function reduce3() {  # cutting the dates
     cd ..
 }
 
-function tesseract_latlng_video1() {
-    tesseract $1 $2 -l dsdigital --tessdata-dir ./tessdata -psm 6 \
-        --user-patterns ./tessdata/latlng.user-patterns \
-        -c tessedit_char_whitelist=-,0123456789
-}
-
-function tesseract_latlng_video2() {
-    tesseract $1 $2 -l helvetica --tessdata-dir ./tessdata/ -psm 6 \
-        --user-patterns ./tessdata/latlng.user-patterns \
-        -c tessedit_char_whitelist=-,0123456789 \
-        -c language_model_penalty_punc=0.1
-}
-
 # TODO main
 
 function download_video() {
@@ -136,19 +129,50 @@ function download_video() {
 
 function adjust_constrast() {  # TODO (optional use)
     # For video 2
-    #convert [img] -level 0%,250% [out]
-    #convert [out] +level 150%,-250% [final]
     echo
+}
+
+function split_frames() {
+  mkdir -p $DIR
+  ffmpeg -i $FILE -qscale:v 2 -r 1/2 "$DIR/%03d.jpg"
 }
 
 function crop_frames() {
     reduce1
     reduce2 $DIM_COORD_VIDEO
-    reduce3
+#reduce3
 }
 
 function extract_data() {  # TODO
     echo
+}
+
+function enhance1() {
+  cd $DIR/coord
+  for i in *jpg ; do
+    ../../negative2positive $i a$i
+    ../../textcleaner -p 10 -g -e stretch -f 10 -t 20 a$i b$i
+  done
+
+  rm a*.jpg
+}
+
+function enhance2() {
+  cd $DIR/coord
+  for i in *jpg ; do
+    convert $i -level 0%,250% a$i
+    convert a$i +level 150%,-250% b$i
+  done
+
+  rm a*.jpg
+}
+
+function ocr() {
+  for i in $DIR/coord/b*jpg ; do
+     tesseract $i $i -l $LANG --tessdata-dir ./tessdata/ -psm 6 \
+     --user-patterns ./tessdata/latlng.user-patterns \
+     -c tessedit_char_whitelist=-,0123456789 -c tosp_min_sane_kn_sp=8
+  done
 }
 
 # Parsing parameters
@@ -164,16 +188,20 @@ case "$1" in
         echo "not implemented"
         ;;
     prepare)
+        split_frames
         crop_frames
         ;;
+    enhance)
+      enhance$TYPE
+      ;;
     make)
         extract_data
         ;;
     download)
         download_video
         ;;
-    test)
-        tesseract_latlng_video1 1/coord/001.jpg out
+    extract)
+        ocr
         ;;
     help)
         echo "not implemented"
