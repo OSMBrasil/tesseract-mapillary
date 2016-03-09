@@ -154,7 +154,16 @@ function crop_frames() {
 }
 
 function extract_data() {  # TODO
-    echo
+    for i in $DIR/coord/*jpg ; do
+        tesseract_latlng_video$TYPE $i $i
+    done
+    #sed -i $DIR/coord/*txt -e "s/ *//g" -e "s/\(.\)-./\1/g"
+    for i in $DIR/coord/*txt ; do
+        tr '\n' ' ' < $i > temp.txt && mv temp.txt $i
+        echo -e '\n' >> $i
+    done
+    rm all.txt
+    cat $DIR/coord/*.txt >> all.txt
 }
 
 # Parsing parameters
