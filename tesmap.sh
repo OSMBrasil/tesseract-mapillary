@@ -27,7 +27,7 @@ YOUTUBE_VIDEO_ID=Qkg32qsbmC8
 
 TYPE=1
 
-# Variables
+# Others variables: constants and compositions
 
 URL="https://www.youtube.com/watch?v=$YOUTUBE_VIDEO_ID"
 DIR="$TYPE"
