@@ -170,7 +170,7 @@ function enhance2() {
 function ocr() {
   for i in $DIR/coord/b*jpg ; do
      tesseract $i $i -l $LANG --tessdata-dir ./tessdata/ -psm 6 \
-     --user-patterns ./tessdata/latlng.user-patterns \
+     --user-patterns -\d\d,\d\d\d\d \
      -c tessedit_char_whitelist=-,0123456789 -c tosp_min_sane_kn_sp=8
   done
 }
